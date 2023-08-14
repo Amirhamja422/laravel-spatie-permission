@@ -21,7 +21,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return view('role.index');
+        $roles = Role::latest()->get();
+        return view('role.index',compact('roles'));
     }
 
     /**
@@ -31,10 +32,10 @@ class RoleController extends Controller
      */
     public function create()
     {
-        // $permissions = Permission::all();
+        $permissions = Permission::all();
         // $permission_groups = User::getPermissionGroup();
 
-        return view('role.create');
+        return view('role.create',compact('permissions'));
     }
 
     /**
@@ -46,6 +47,13 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         // CreateRole::create($request);
+        // return $request->all();
+
+        $request->validate([
+           'name' => 'required|unique:roles,name'
+        ]);
+
+        Role::create(['name' => $request->name]);
 
         session()->flash('success', 'Role Created!');
         return redirect()->route('roles.index');
@@ -83,7 +91,7 @@ class RoleController extends Controller
      */
     public function update($request, $id)
     {
-        abort_if(!userCan('role.update'), 403);
+        // abort_if(!userCan('role.update'), 403);
 
         try {
             UpdateRole::update($request, $role);
@@ -103,19 +111,19 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Role $role)
     {
-        abort_if(!userCan('role.delete'), 403);
+        // abort_if(!userCan('role.delete'), 403);
 
         try {
             if (!is_null($role)) {
                 $role->delete();
             }
 
-            Toastr::success('success', 'Role Deleted!');
+            session()->flash('success', 'Role Deleted!');
             return back();
         } catch (\Throwable $th) {
-            Toastr::error('Error', 'Something is wrong');
+            session()->flash('Error', 'Something is wrong');
             return back();
         }
     }

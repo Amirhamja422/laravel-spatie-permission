@@ -37,11 +37,14 @@
                         </tr>
                     </thead>
                     <tbody>
+                    @if($roles->count())
+                         @foreach ($roles as $role )
+
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" class="py-4 px-6">1</th>
                             <th scope="row" class="py-4 px-6">
-                                Create Post
-                            </th>
+                            {{$role->name}}
+                           </th>
                             <th class="py-4 px-6">
                                 <button id="show-per-icon" onclick="permissionShow('show', '')" type="button"
                                     data-tooltip-target="show-button" data-bs-toggle="tooltip" data-bs-placement="top">
@@ -60,10 +63,12 @@
                             </th>
                             <td class="py-4 px-6 flex gap-2">
                                 <a data-tooltip-target="edit-button" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    href="">
+                                    href="{{ route('roles.edit',$role->id) }}">
                                     <x-svg.edit class="w-6 h-6 text-green-400" />
                                 </a>
-                                <form action="" method="POST" class="d-inline">
+                                <form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="d-inline">
+                                    @method('DELETE')
+                                    @csrf
                                     <button data-tooltip-target="delete-button" data-bs-toggle="tooltip"
                                         data-bs-placement="top">
                                         <x-svg.trash class="w-6 h-6 text-red-400" />
@@ -71,9 +76,13 @@
                                 </form>
                             </td>
                         </tr>
+
+                        @endforeach
+                    @else
                         <tr>
                             <td colspan="10" class="text-center pt-8">Nothing Found.</td>
                         </tr>
+                        @endif
                     </tbody>
                 </table>
                 <div class="p-5">
