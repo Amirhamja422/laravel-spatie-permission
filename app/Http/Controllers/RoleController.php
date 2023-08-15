@@ -21,8 +21,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::latest()->get();
-        return view('role.index',compact('roles'));
+        $roles = Role::with('permissions')->latest()->get();
+        // return $roles;
+        return view('role.index', compact('roles'));
     }
 
     /**
@@ -50,10 +51,19 @@ class RoleController extends Controller
         // return $request->all();
 
         $request->validate([
-           'name' => 'required|unique:roles,name'
+           'name' => 'required|unique:roles,name',
+        //    'permission' => 'required|min:1'
+
         ]);
 
-        Role::create(['name' => $request->name]);
+        // return $request->permissions;
+        $role = Role::create([
+            'name' => $request->name,
+            'guard_name' => 'web'
+
+        ]);
+    //    $role->syncPermission($request->permission);
+
 
         session()->flash('success', 'Role Created!');
         return redirect()->route('roles.index');
