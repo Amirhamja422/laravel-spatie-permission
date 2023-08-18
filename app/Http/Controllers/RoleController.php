@@ -12,8 +12,12 @@ use Brian2694\Toastr\Facades\Toastr;
 use App\Http\Requests\RoleFormRequest;
 use Spatie\Permission\Models\Permission;
 
+use Spatie\Permission\Traits\HasRoles;
+
 class RoleController extends Controller
 {
+    use HasRoles;
+
     /**
      * Display a listing of the resource.
      *
@@ -49,7 +53,9 @@ class RoleController extends Controller
     {
         // CreateRole::create($request);
         // return $request->all();
-
+        // return $request->permission;
+        $test = $request->permissions;
+        // return $test;
         $request->validate([
            'name' => 'required|unique:roles,name',
         //    'permission' => 'required|min:1'
@@ -62,7 +68,12 @@ class RoleController extends Controller
             'guard_name' => 'web'
 
         ]);
-    //    $role->syncPermission($request->permission);
+
+
+    //    $role->syncPermissions($request->permission);
+
+    //    $role->syncPermissions('1','4');
+       $role->syncPermissions($test);
 
 
         session()->flash('success', 'Role Created!');
@@ -86,10 +97,11 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Role $role)
     {
-
-        return view('role.edit');
+        $permissions = Permission::all();
+        // return $permissions;
+        return view('role.edit', compact('permissions','role'));
     }
 
     /**
